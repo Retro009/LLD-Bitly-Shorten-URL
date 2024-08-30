@@ -1,6 +1,7 @@
 package com.example.shortenurl.controllers;
 
 import com.example.shortenurl.dtos.*;
+import com.example.shortenurl.exceptions.UrlNotFoundException;
 import com.example.shortenurl.exceptions.UserNotFoundException;
 import com.example.shortenurl.models.ShortenedUrl;
 import com.example.shortenurl.services.UrlService;
@@ -30,6 +31,13 @@ public class UrlController {
     }
 
     public ResolveShortenUrlResponseDto resolveShortenedUrl(ResolveShortenUrlRequestDto requestDto) {
-        return null;
+        ResolveShortenUrlResponseDto responseDto = new ResolveShortenUrlResponseDto();
+        try {
+            responseDto.setOriginalUrl(urlService.resolveShortenedUrl(requestDto.getShortenUrl()));
+            responseDto.setStatus(ResponseStatus.SUCCESS);
+        } catch (UrlNotFoundException e) {
+            responseDto.setStatus(ResponseStatus.FAILURE);
+        }
+        return responseDto;
     }
 }
