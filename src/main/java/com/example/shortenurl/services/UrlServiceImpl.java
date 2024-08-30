@@ -41,7 +41,7 @@ public class UrlServiceImpl implements UrlService{
             case ENTERPRISE -> day = 365;
         }
         long planTime = day * 24 * 60 * 60 * 1000;
-        shortenedUrl.setExpiresAt(planTime);
+        shortenedUrl.setExpiresAt(System.currentTimeMillis()+planTime);
 
         return shortenedUrlRepository.save(shortenedUrl);
     }
@@ -54,12 +54,12 @@ public class UrlServiceImpl implements UrlService{
         ShortenedUrl shortenedUrl = optionalShortenedUrl.get();
         if(shortenedUrl.getExpiresAt()-System.currentTimeMillis()<0)
             throw new UrlNotFoundException("Url is Expired!!");
-
-        UrlAccessLog urlAccessLog = new UrlAccessLog();
-        urlAccessLog.setShortenedUrl(shortenedUrl);
-        urlAccessLog.setAccessedAt(System.currentTimeMillis());
-        urlAccessLogRepository.save(urlAccessLog);
-
+        if(shortenedUrl.getShortUrl().equals(shortUrl)){
+            UrlAccessLog urlAccessLog = new UrlAccessLog();
+            urlAccessLog.setShortenedUrl(shortenedUrl);
+            urlAccessLog.setAccessedAt(System.currentTimeMillis());
+            urlAccessLogRepository.save(urlAccessLog);
+        }
         return shortenedUrl.getOriginalUrl();
     }
 }
